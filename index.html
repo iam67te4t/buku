@@ -1,0 +1,429 @@
+import tkinter as tk
+import random
+
+# =========================
+# PENGATURAN APLIKASI
+# =========================
+root = tk.Tk()
+root.title("Catatan Lucu Buat Kamu")
+root.geometry("950x650")
+root.configure(bg="#f9e4eb")
+root.resizable(False, False)
+
+PINK = "#e88da8"
+DARK_PINK = "#c65c80"
+LIGHT_PINK = "#ffeaf1"
+PAPER = "#fffdf8"
+TEXT = "#72525b"
+WHITE = "#ffffff"
+
+canvas = tk.Canvas(
+    root,
+    width=950,
+    height=570,
+    bg="#f9e4eb",
+    highlightthickness=0
+)
+canvas.pack()
+
+# =========================
+# ISI HALAMAN BUKU
+# =========================
+pages = [
+    {
+        "title": "Halaman Pembuka",
+        "text": [
+            "Hai, kamu!",
+            "",
+            "Aku punya sesuatu yang kecil",
+            "tapi semoga bisa bikin kamu",
+            "tersenyum hari ini.",
+            "",
+            "Baca sampai selesai, ya!"
+        ]
+    },
+    {
+        "title": "Hal-Hal Kecil",
+        "text": [
+            "Aku suka hal-hal sederhana.",
+            "",
+            "Seperti obrolan random,",
+            "cerita yang tidak penting,",
+            "dan tawa tanpa alasan.",
+            "",
+            "Hal kecil juga bisa berarti."
+        ]
+    },
+    {
+        "title": "Tentang Kamu",
+        "text": [
+            "Mungkin kamu tidak sadar,",
+            "",
+            "tapi caramu bercerita,",
+            "caramu tertawa,",
+            "dan caramu menjadi diri sendiri",
+            "",
+            "bisa membuat hari lebih baik."
+        ]
+    },
+    {
+        "title": "Jangan Lupa",
+        "text": [
+            "Jangan terlalu keras",
+            "pada dirimu sendiri.",
+            "",
+            "Kamu boleh beristirahat,",
+            "boleh merasa lelah,",
+            "dan boleh berjalan perlahan.",
+            "",
+            "Kamu tetap berharga."
+        ]
+    },
+    {
+        "title": "Pesan Kecil",
+        "text": [
+            "Terima kasih sudah bertahan",
+            "melewati hari-harimu.",
+            "",
+            "Semoga besok lebih baik,",
+            "lebih tenang,",
+            "dan lebih banyak senyuman.",
+            "",
+            "Semangat, ya!"
+        ]
+    },
+    {
+        "title": "Sampai Jumpa...",
+        "text": [
+            "Sampai di halaman terakhir.",
+            "",
+            "Kalau hari ini terasa berat,",
+            "ingat bahwa masih ada",
+            "banyak hal baik yang menunggu.",
+            "",
+            "Jaga dirimu baik-baik."
+        ]
+    }
+]
+
+page_index = 0
+book_open = False
+
+# =========================
+# DEKORASI LATAR
+# =========================
+random.seed(10)
+
+for i in range(45):
+    x = random.randint(10, 940)
+    y = random.randint(10, 550)
+    canvas.create_text(
+        x, y,
+        text=random.choice(["♡", "✦", "·"]),
+        fill="#e9b4c5",
+        font=("Arial", random.randint(10, 19))
+    )
+
+# Bayangan buku
+canvas.create_rectangle(
+    150, 105, 805, 490,
+    fill="#e8c9d3", outline=""
+)
+
+# =========================
+# FUNGSI MENGGAMBAR HALAMAN
+# =========================
+def draw_page(x1, y1, x2, y2, title, lines, number):
+    # Kertas
+    canvas.create_rectangle(
+        x1, y1, x2, y2,
+        fill=PAPER,
+        outline="#e6d4d8",
+        width=2
+    )
+
+    # Garis dekorasi samping
+    for y in range(y1 + 12, y2 - 10, 15):
+        canvas.create_rectangle(
+            x1 + 9, y, x1 + 17, y + 7,
+            fill=PINK, outline=""
+        )
+
+    # Judul
+    canvas.create_text(
+        (x1 + x2) // 2,
+        y1 + 38,
+        text=title,
+        fill=DARK_PINK,
+        font=("Arial", 15, "bold")
+    )
+
+    # Garis bawah judul
+    canvas.create_line(
+        x1 + 35, y1 + 58,
+        x2 - 20, y1 + 58,
+        fill="#f0c1cf",
+        width=2
+    )
+
+    # Isi pesan
+    content = "\n".join(lines)
+
+    canvas.create_text(
+        (x1 + x2) // 2 + 5,
+        y1 + 180,
+        text=content,
+        fill="#72525b",
+        font=("Arial", 12),
+        justify="center",
+        width=x2 - x1 - 55,
+        anchor="center"
+    )
+
+    # Hiasan bawah
+    canvas.create_text(
+        (x1 + x2) // 2,
+        y2 - 25,
+        text="♡  ✦  ♡",
+        fill=DARK_PINK,
+        font=("Arial", 15)
+    )
+
+    canvas.create_text(
+        x2 - 30, y2 - 12,
+        text=str(number),
+        fill="#a88b93",
+        font=("Arial", 8)
+    )
+
+
+# =========================
+# FUNGSI MENGGAMBAR SAMPUL
+# =========================
+def draw_cover(back=False):
+    canvas.create_rectangle(
+        270, 85, 680, 495,
+        fill="#d77f9c",
+        outline="#b75e7c",
+        width=3
+    )
+
+    # Pola garis di sisi sampul
+    for y in range(100, 480, 18):
+        canvas.create_rectangle(
+            285, y, 300, y + 9,
+            fill=WHITE, outline=""
+        )
+
+    if back:
+        title = "Terima Kasih ♡"
+        subtitle = "Sampai bertemu lagi."
+        symbol = "♡"
+    else:
+        title = "Catatan Lucu Buat Kamu"
+        subtitle = "Buka perlahan, ya..."
+        symbol = "♥️"
+
+    canvas.create_text(
+        475, 205,
+        text=symbol,
+        fill=WHITE,
+        font=("Arial", 65, "bold")
+    )
+
+    canvas.create_text(
+        475, 290,
+        text=title,
+        fill=WHITE,
+        font=("Arial", 19, "bold"),
+        width=300
+    )
+
+    canvas.create_text(
+        475, 330,
+        text=subtitle,
+        fill="#fff2f6",
+        font=("Arial", 11, "italic")
+    )
+
+    canvas.create_text(
+        475, 460,
+        text="Made with love",
+        fill=WHITE,
+        font=("Arial", 10, "italic")
+    )
+
+
+# =========================
+# FUNGSI MENAMPILKAN BUKU
+# =========================
+def draw_book():
+    canvas.delete("all")
+
+    # Hiasan latar
+    random.seed(10)
+    for i in range(45):
+        x = random.randint(10, 940)
+        y = random.randint(10, 550)
+        canvas.create_text(
+            x, y,
+            text=random.choice(["♡", "✦", "·"]),
+            fill="#e9b4c5",
+            font=("Arial", random.randint(10, 19))
+        )
+
+    if not book_open:
+        draw_cover()
+        status.config(text="Sampul depan")
+
+    elif page_index >= len(pages):
+        draw_cover(back=True)
+        status.config(text="Sampul belakang")
+
+    else:
+        # Bayangan dan dua halaman
+        canvas.create_rectangle(
+            145, 85, 810, 495,
+            fill="#e7cbd4", outline=""
+        )
+
+        left = pages[page_index]
+
+        draw_page(
+            155, 95, 475, 485,
+            left["title"],
+            left["text"],
+            page_index + 1
+        )
+
+        # Halaman kanan
+        if page_index + 1 < len(pages):
+            right = pages[page_index + 1]
+
+            draw_page(
+                480, 95, 800, 485,
+                right["title"],
+                right["text"],
+                page_index + 2
+            )
+        else:
+            canvas.create_rectangle(
+                480, 95, 800, 485,
+                fill="#fff3f7",
+                outline="#e6d4d8",
+                width=2
+            )
+            canvas.create_text(
+                640, 270,
+                text="♡",
+                fill=PINK,
+                font=("Arial", 55)
+            )
+            canvas.create_text(
+                640, 325,
+                text="Untuk kamu.",
+                fill=TEXT,
+                font=("Arial", 13, "italic")
+            )
+
+        # Garis tengah buku
+        canvas.create_line(
+            477, 100, 477, 480,
+            fill="#d7bdc5",
+            width=3
+        )
+
+        status.config(
+            text=f"Halaman {page_index + 1}"
+        )
+
+
+# =========================
+# TOMBOL NAVIGASI
+# =========================
+def open_book():
+    global book_open, page_index
+    book_open = True
+    page_index = 0
+    draw_book()
+
+
+def next_page():
+    global page_index, book_open
+
+    if not book_open:
+        open_book()
+    elif page_index < len(pages):
+        page_index += 2
+        draw_book()
+
+
+def previous_page():
+    global page_index, book_open
+
+    if not book_open:
+        return
+
+    if page_index >= len(pages):
+        page_index = max(0, len(pages) - 2)
+    elif page_index >= 2:
+        page_index -= 2
+    else:
+        book_open = False
+        page_index = 0
+
+    draw_book()
+
+
+def close_book():
+    global book_open, page_index
+    book_open = False
+    page_index = 0
+    draw_book()
+
+
+# =========================
+# KONTROL APLIKASI
+# =========================
+status = tk.Label(
+    root,
+    text="Sampul depan",
+    bg="#f9e4eb",
+    fg=TEXT,
+    font=("Arial", 11, "bold")
+)
+status.place(x=400, y=575)
+
+button_style = {
+    "bg": DARK_PINK,
+    "fg": WHITE,
+    "activebackground": PINK,
+    "activeforeground": WHITE,
+    "font": ("Arial", 10, "bold"),
+    "relief": "flat",
+    "cursor": "hand2"
+}
+
+tk.Button(
+    root,
+    text="◀️ Sebelumnya",
+    command=previous_page,
+    **button_style
+).place(x=235, y=605, width=135, height=32)
+
+tk.Button(
+    root,
+    text="Buka Buku ♡",
+    command=open_book,
+    **button_style
+).place(x=390, y=605, width=150, height=32)
+
+tk.Button(
+    root,
+    text="Berikutnya ▶️",
+    command=next_page,
+    **button_style
+).place(x=560, y=605, width=135, height=32)
+
+draw_book()
+root.mainloop()
